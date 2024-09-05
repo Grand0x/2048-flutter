@@ -46,7 +46,9 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               ScoreBoard(grid: _grid),
-              GameBoard(),
+              GameBoard(
+                grid: _grid,
+              ),
             ],
           ),
         ),

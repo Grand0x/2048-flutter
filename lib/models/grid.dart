@@ -46,8 +46,80 @@ class Grid extends ChangeNotifier {
   }
 
   // Méthode pour mettre à jour le score lors d'une fusion
-  void updateScore(int points) {
+  void _updateScore(int points) {
     _score += points;
     notifyListeners();
+  }
+
+  // Méthode pour vérifier si le jeu est terminé (aucun mouvement possible)
+  bool isGameOver() {
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        if (_grid[i][j] == 0) return false; // Il reste une case vide
+        if (i > 0 && _grid[i][j] == _grid[i - 1][j]) return false; // Fusion possible en haut
+        if (i < 3 && _grid[i][j] == _grid[i + 1][j]) return false; // Fusion possible en bas
+        if (j > 0 && _grid[i][j] == _grid[i][j - 1]) return false; // Fusion possible à gauche
+        if (j < 3 && _grid[i][j] == _grid[i][j + 1]) return false; // Fusion possible à droite
+      }
+    }
+    return true; // Aucune case vide et aucune fusion possible
+  }
+
+  // Méthode pour déplacer et fusionner les tuiles dans une direction donnée
+  void moveLeft() {
+    for (int i = 0; i < 4; i++) {
+      _grid[i] = _slideAndMergeRow(_grid[i]);
+    }
+    _addRandomTile();
+    notifyListeners();
+  }
+
+  void moveRight() {
+    for (int i = 0; i < 4; i++) {
+      _grid[i] = _slideAndMergeRow(_grid[i].reversed.toList()).reversed.toList();
+    }
+    _addRandomTile();
+    notifyListeners();
+  }
+
+  void moveUp() {
+    for (int j = 0; j < 4; j++) {
+      List<int> column = [_grid[0][j], _grid[1][j], _grid[2][j], _grid[3][j]];
+      column = _slideAndMergeRow(column);
+      for (int i = 0; i < 4; i++) {
+        _grid[i][j] = column[i];
+      }
+    }
+    _addRandomTile();
+    notifyListeners();
+  }
+
+  void moveDown() {
+    for (int j = 0; j < 4; j++) {
+      List<int> column = [_grid[0][j], _grid[1][j], _grid[2][j], _grid[3][j]];
+      column = _slideAndMergeRow(column.reversed.toList()).reversed.toList();
+      for (int i = 0; i < 4; i++) {
+        _grid[i][j] = column[i];
+      }
+    }
+    _addRandomTile();
+    notifyListeners();
+  }
+
+  // Fonction utilitaire pour glisser et fusionner une rangée
+  List<int> _slideAndMergeRow(List<int> row) {
+    List<int> newRow = row.where((val) => val != 0).toList(); // Supprime les zéros
+    for (int i = 0; i < newRow.length - 1; i++) {
+      if (newRow[i] == newRow[i + 1]) {
+        newRow[i] *= 2; // Fusion des tuiles
+        _updateScore(newRow[i]); // Mise à jour du score
+        newRow[i + 1] = 0; // Remplacer la tuile fusionnée par un zéro
+      }
+    }
+    newRow.removeWhere((val) => val == 0); // Supprime les zéros
+    while (newRow.length < 4) {
+      newRow.add(0); // Complète avec des zéros à droite
+    }
+    return newRow;
   }
 }
