@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models/grid.dart';
 import 'package:myapp/widgets/game_board.dart';
 import 'package:myapp/widgets/scoreboard.dart';
 
@@ -32,13 +33,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final Grid _grid = Grid();
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +44,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[ScoreBoard(), GameBoard()],
+            children: <Widget>[
+              ScoreBoard(grid: _grid),
+              GameBoard(),
+            ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.purple[200],
-        onPressed: _incrementCounter,
+        onPressed: _grid.resetGame,
         tooltip: 'Reset',
         child: const Icon(Icons.replay_outlined),
       ),
