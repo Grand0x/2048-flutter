@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.purple[200],
+        backgroundColor: Colors.orange[200],
         onPressed: _grid.resetGame,
         tooltip: 'Reset',
         child: const Icon(Icons.replay_outlined),

@@ -14,20 +14,27 @@ class GameBoard extends StatefulWidget {
 class _GameBoardState extends State<GameBoard> {
   // Fonction pour capturer les gestes de swipe et déplacer les tuiles
   void _handleSwipe(DragEndDetails details) {
-    if (details.primaryVelocity != null) {
-      if (details.primaryVelocity! < 0) {
-        // Swipe vers la gauche
+    final velocity = details.velocity.pixelsPerSecond;
+
+    // Seuil de vélocité pour détecter un swipe
+    const threshold = 20.0;
+
+    if (velocity.dx.abs() > velocity.dy.abs()) {
+      // Swipe horizontal
+      if (velocity.dx < -threshold) {
+        // Swipe gauche
         widget.grid.moveLeft();
-      } else if (details.primaryVelocity! > 0) {
-        // Swipe vers la droite
+      } else if (velocity.dx > threshold) {
+        // Swipe droite
         widget.grid.moveRight();
       }
-    } else if (details.velocity.pixelsPerSecond.dy != 0) {
-      if (details.velocity.pixelsPerSecond.dy < 0) {
-        // Swipe vers le haut
+    } else {
+      // Swipe vertical
+      if (velocity.dy < -threshold) {
+        // Swipe haut
         widget.grid.moveUp();
-      } else {
-        // Swipe vers le bas
+      } else if (velocity.dy > threshold) {
+        // Swipe bas
         widget.grid.moveDown();
       }
     }
@@ -36,8 +43,7 @@ class _GameBoardState extends State<GameBoard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onHorizontalDragEnd: _handleSwipe,
-      onVerticalDragEnd: _handleSwipe,
+      onPanEnd: _handleSwipe,
       child: Column(
         children: [
           Expanded(
