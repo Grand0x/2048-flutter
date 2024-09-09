@@ -43,32 +43,55 @@ class _GameBoardState extends State<GameBoard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onPanEnd: _handleSwipe,
-      child: Column(
-        children: [
-          Expanded(
-              child: ListenableBuilder(
-                  listenable: widget.grid,
-                  builder: (context, child) {
-                    return GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16.0),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 8.0,
+        onPanEnd: _handleSwipe,
+        child: ListenableBuilder(
+            listenable: widget.grid,
+            builder: (context, child) {
+              return Stack(children: [
+                Column(
+                  children: [
+                    Expanded(
+                        child: Center(
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16.0),
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 8.0,
+                        ),
+                        itemCount: 16,
+                        itemBuilder: (context, index) {
+                          int row = index ~/ 4;
+                          int col = index % 4;
+                          return Tile(number: widget.grid.grid[row][col]);
+                        },
                       ),
-                      itemCount: 16,
-                      itemBuilder: (context, index) {
-                        int row = index ~/ 4;
-                        int col = index % 4;
-                        return Tile(number: widget.grid.grid[row][col]);
-                      },
-                    );
-                  })),
-        ],
-      ),
-    );
+                    )),
+                  ],
+                ),
+                if (widget.grid.isGameOver())
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Game Over',
+                          style: TextStyle(
+                            fontSize: 48,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ]);
+            }));
   }
 }
